@@ -1,0 +1,11 @@
+applications.xlsx
+match_results.csv
+job_descriptions/*
+!job_descriptions/.gitkeep
+*resume*.pdf
+*resume*.docx
+__pycache__/
+*.pyc
+venv/
+env/
+.env
