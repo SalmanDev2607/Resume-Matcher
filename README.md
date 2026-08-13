@@ -14,6 +14,25 @@ so you can apply faster and smarter, manually.
 
 ## Setup (one-time)
 
+### Using Docker (Recommended)
+
+You can run the entire application (backend and frontend UI) in a single container using Docker Compose:
+
+1. Ensure you have Docker and Docker Compose installed.
+2. Create a `.env` file in the project root and add your Adzuna credentials (optional, for auto-fetching jobs):
+```bash
+ADZUNA_APP_ID="your_app_id"
+ADZUNA_APP_KEY="your_app_key"
+PORT=8000
+```
+3. Run the container:
+```bash
+docker-compose up --build -d
+```
+4. Access the web UI at `http://localhost:8000` (or whichever port you specified).
+
+### Local Setup (Without Docker)
+
 ```bash
 cd resume_matcher
 pip install -r requirements.txt
