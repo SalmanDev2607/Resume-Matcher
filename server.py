@@ -2,6 +2,7 @@ import os
 import tempfile
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List
 import uvicorn
@@ -106,6 +107,14 @@ async def compare_jobs(req: CompareRequest):
     
     results.sort(key=lambda x: x["match_score"], reverse=True)
     return {"results": results}
+
+ui_dist_path = os.path.join(os.path.dirname(__file__), "ui", "dist")
+if os.path.exists(ui_dist_path):
+    app.mount("/", StaticFiles(directory=ui_dist_path, html=True), name="ui")
+else:
+    @app.get("/")
+    def read_root():
+        return {"message": "UI build not found. Please build the UI first."}
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8004))
