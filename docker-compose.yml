@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  resume-matcher:
+    build: .
+    container_name: resume-matcher
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8000}:${PORT:-8004}" # Bind to default 8000 on host, map to internal 8004 by default if PORT is not set
+    environment:
+      - ADZUNA_APP_ID=${ADZUNA_APP_ID}
+      - ADZUNA_APP_KEY=${ADZUNA_APP_KEY}
+      - PORT=${PORT:-8004}
