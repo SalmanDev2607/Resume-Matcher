@@ -10,4 +10,6 @@ services:
     environment:
       - ADZUNA_APP_ID=${ADZUNA_APP_ID}
       - ADZUNA_APP_KEY=${ADZUNA_APP_KEY}
+      - SCORER_ENGINE=${SCORER_ENGINE:-HEURISTIC}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
       - PORT=${PORT:-8004}

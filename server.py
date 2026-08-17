@@ -13,6 +13,7 @@ load_dotenv()
 from extractor import extract_text
 from fetch_jobs import fetch_jobs
 from matcher import score_job
+from scorer import get_resume_score
 
 app = FastAPI(title="Resume Matcher API")
 
@@ -43,6 +44,17 @@ async def upload_resume(file: UploadFile = File(...)):
     
     os.remove(tmp_path)
     return {"resume_text": resume_text}
+
+class ScoreResumeRequest(BaseModel):
+    resume_text: str
+
+@app.post("/api/resume/score")
+async def score_resume_endpoint(req: ScoreResumeRequest):
+    try:
+        result = get_resume_score(req.resume_text)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 class JobSearchRequest(BaseModel):
     what: str
