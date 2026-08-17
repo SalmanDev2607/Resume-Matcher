@@ -19,7 +19,7 @@ so you can apply faster and smarter, manually.
 You can run the entire application (backend and frontend UI) in a single container using Docker Compose:
 
 1. Ensure you have Docker and Docker Compose installed.
-2. Create a `.env` file in the project root and add your Adzuna credentials (optional, for auto-fetching jobs):
+2. Create a `.env` file in the project root:
 ```bash
 ADZUNA_APP_ID="your_app_id"
 ADZUNA_APP_KEY="your_app_key"
@@ -38,36 +38,21 @@ cd resume_matcher
 pip install -r requirements.txt
 ```
 
-To auto-fetch live listings (see "Option A" below), also:
-1. Register free at https://developer.adzuna.com/ (takes ~2 minutes)
-2. Grab your `app_id` and `app_key` from the dashboard
-3. Set them as environment variables so the script can find them:
-
-```bash
-export ADZUNA_APP_ID="your_app_id"
-export ADZUNA_APP_KEY="your_app_key"
-```
-
-(Add those two lines to your `~/.bashrc` so you don't have to re-set them every session.)
 
 ## Usage
 
-### Option A — Auto-fetch listings (Indeed, and boards Adzuna aggregates)
+### Option A — Auto-fetch listings (LinkedIn, Indeed, Glassdoor, ZipRecruiter, Adzuna)
 
 ```bash
-python fetch_jobs.py --what "backend developer node.js" --where "Hyderabad" --pages 2
+python fetch_jobs.py --search "backend developer node.js" --location "Hyderabad, India" --results 20 --source both
 python main.py --resume /path/to/your_resume.pdf
 ```
 
-`fetch_jobs.py` pulls live listings from Adzuna's public job-search API
-(a legitimate, ToS-compliant API — not scraping) and saves each one as a
+`fetch_jobs.py` pulls live listings from major job boards using `python-jobspy` and `Adzuna` (if credentials are provided in `.env`) and saves each one as a
 file in `job_descriptions/`, ready for `main.py` to score. Run it again
-with different `--what`/`--where` to pull more roles.
+with different `--search`/`--location` to pull more roles.
 
-Note: this can't reach LinkedIn or Naukri directly — neither offers a
-public API, and automating logins against them risks getting your
-account banned. Adzuna's index does include cross-posted listings from
-many boards, but for LinkedIn/Naukri-exclusive postings, use Option B.
+Note: Boards like Naukri and Hirist have extremely strict anti-bot protections and cannot be easily scraped. For jobs exclusively on these platforms, use Option B.
 
 ### Option B — Paste in listings manually (needed for LinkedIn/Naukri)
 
@@ -194,7 +179,7 @@ or address directly, in your cover letter/application for that role.
 ## Full workflow
 
 ```bash
-python fetch_jobs.py --what "backend developer node.js" --where "Hyderabad" --pages 2
+python fetch_jobs.py --search "backend developer node.js" --location "Hyderabad, India" --results 20
 python main.py --resume /path/to/your_resume.pdf
 python open_top_matches.py --top 5 --min-score 0.3
 # ...apply in the tabs that opened...

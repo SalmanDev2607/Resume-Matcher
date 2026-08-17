@@ -48,28 +48,32 @@ class JobSearchRequest(BaseModel):
     what: str
     where: str = ""
     pages: int = 1
+    source: str = "both"
+    experience: str = ""
 
 @app.post("/api/jobs/search")
 async def search_jobs(req: JobSearchRequest):
     try:
-        jobs = fetch_jobs(what=req.what, where=req.where, pages=req.pages)
+        jobs = fetch_jobs(what=req.what, where=req.where, pages=req.pages, source=req.source, experience=req.experience)
         formatted_jobs = []
         for job in jobs:
             title = job.get("title", "Untitled")
-            company = (job.get("company") or {}).get("display_name", "Unknown")
-            location = (job.get("location") or {}).get("display_name", "")
+            company = job.get("company", "Unknown")
+            location = job.get("location", "")
             desc = job.get("description", "")
             apply_url = job.get("redirect_url", "")
+            source = job.get("source", "Unknown")
             
-            jd_text = f"Title: {title}\nCompany: {company}\nLocation: {location}\nApply link: {apply_url}\n\n{desc}"
+            jd_text = f"Title: {title}\nCompany: {company}\nLocation: {location}\nSource: {source}\nApply link: {apply_url}\n\n{desc}"
             
             formatted_jobs.append({
-                "job_name": f"{title} - {company}",
+                "job_name": f"[{source}] {title} - {company}",
                 "jd_text": jd_text,
                 "apply_url": apply_url,
                 "title": title,
                 "company": company,
-                "location": location
+                "location": location,
+                "source": source
             })
         return {"jobs": formatted_jobs}
     except Exception as e:
@@ -82,6 +86,7 @@ class JobData(BaseModel):
     title: str
     company: str
     location: str
+    source: str = "Unknown"
 
 class CompareRequest(BaseModel):
     resume_text: str
@@ -102,7 +107,8 @@ async def compare_jobs(req: CompareRequest):
             "semantic_similarity_pct": score_res["semantic_similarity_pct"],
             "matched_skills": score_res["matched_skills"],
             "missing_skills": score_res["missing_skills"],
-            "apply_url": job.apply_url
+            "apply_url": job.apply_url,
+            "source": job.source
         })
     
     results.sort(key=lambda x: x["match_score"], reverse=True)
