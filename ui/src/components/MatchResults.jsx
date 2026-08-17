@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ExternalLink, Check, X, Award } from 'lucide-react';
 
 export default function MatchResults({ results }) {
+  const [activeFilter, setActiveFilter] = useState('All');
+
   if (!results || results.length === 0) return null;
+
+  const uniqueSources = Array.from(new Set(results.map(r => r.source).filter(Boolean)));
+  const filteredResults = activeFilter === 'All' 
+    ? results 
+    : results.filter(r => r.source === activeFilter);
 
   return (
     <div className="results-section">
@@ -11,8 +18,26 @@ export default function MatchResults({ results }) {
         Top Matched Jobs
       </h2>
       
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+        <button 
+          onClick={() => setActiveFilter('All')}
+          style={{ padding: '0.4rem 1rem', borderRadius: '20px', border: '1px solid var(--glass-border)', background: activeFilter === 'All' ? 'var(--accent-primary)' : 'rgba(30, 41, 59, 0.4)', color: activeFilter === 'All' ? 'white' : 'var(--text-color)', cursor: 'pointer', transition: 'all 0.2s' }}
+        >
+          All
+        </button>
+        {uniqueSources.map(source => (
+          <button 
+            key={source}
+            onClick={() => setActiveFilter(source)}
+            style={{ padding: '0.4rem 1rem', borderRadius: '20px', border: '1px solid var(--glass-border)', background: activeFilter === source ? 'var(--accent-primary)' : 'rgba(30, 41, 59, 0.4)', color: activeFilter === source ? 'white' : 'var(--text-color)', cursor: 'pointer', transition: 'all 0.2s' }}
+          >
+            {source}
+          </button>
+        ))}
+      </div>
+      
       <div className="results-grid">
-        {results.map((job, idx) => (
+        {filteredResults.map((job, idx) => (
           <div key={idx} className="glass-card match-card">
             <div className="match-header">
               <div className="job-info">
@@ -20,8 +45,15 @@ export default function MatchResults({ results }) {
                 <div className="job-company">{job.company}</div>
                 <div className="job-location">{job.location}</div>
               </div>
-              <div className="score-badge">
-                {Math.round(job.match_score * 100)}% Match
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
+                <div className="score-badge">
+                  {Math.round(job.match_score * 100)}% Match
+                </div>
+                {job.source && (
+                  <div style={{ fontSize: '0.8rem', padding: '0.2rem 0.6rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '12px', color: 'var(--text-secondary)', fontWeight: '500' }}>
+                    Source: {job.source}
+                  </div>
+                )}
               </div>
             </div>
             

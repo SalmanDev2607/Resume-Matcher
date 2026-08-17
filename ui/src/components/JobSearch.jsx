@@ -5,6 +5,8 @@ import axios from 'axios';
 export default function JobSearch({ resumeText, onJobsFound, disabled }) {
   const [what, setWhat] = useState('');
   const [where, setWhere] = useState('Hyderabad');
+  const [experience, setExperience] = useState('');
+  const [source, setSource] = useState('both');
   const [isSearching, setIsSearching] = useState(false);
 
   const handleSearch = async (e) => {
@@ -18,7 +20,9 @@ export default function JobSearch({ resumeText, onJobsFound, disabled }) {
       const response = await axios.post(`${API_BASE_URL}/api/jobs/search`, {
         what,
         where,
-        pages: 1
+        pages: 1,
+        source,
+        experience
       });
 
       const jobs = response.data.jobs;
@@ -37,7 +41,7 @@ export default function JobSearch({ resumeText, onJobsFound, disabled }) {
 
     } catch (error) {
       console.error('Error searching jobs:', error);
-      alert('Failed to search jobs. Make sure Adzuna API keys are set in the backend environment.');
+      alert('Failed to search jobs. Make sure credentials are set in the backend environment.');
     } finally {
       setIsSearching(false);
     }
@@ -73,6 +77,42 @@ export default function JobSearch({ resumeText, onJobsFound, disabled }) {
             onChange={(e) => setWhere(e.target.value)}
             disabled={disabled || isSearching}
           />
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="experience"><Briefcase size={14} style={{ display: 'inline', marginRight: '4px' }} /> Experience Level</label>
+          <select
+            id="experience"
+            className="input-field"
+            value={experience}
+            onChange={(e) => setExperience(e.target.value)}
+            disabled={disabled || isSearching}
+            style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'var(--bg-color)', color: 'var(--text-color)' }}
+          >
+            <option style={{ background: 'var(--bg-color)', color: 'var(--text-color)' }} value="">Any Experience</option>
+            <option style={{ background: 'var(--bg-color)', color: 'var(--text-color)' }} value="Entry Level / Fresher">Entry Level / Fresher</option>
+            <option style={{ background: 'var(--bg-color)', color: 'var(--text-color)' }} value="Mid Level (1-3 years)">Mid Level (1-3 years)</option>
+            <option style={{ background: 'var(--bg-color)', color: 'var(--text-color)' }} value="Senior Level (4+ years)">Senior Level (4+ years)</option>
+          </select>
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="source"><Briefcase size={14} style={{ display: 'inline', marginRight: '4px' }} /> Source</label>
+          <select
+            id="source"
+            className="input-field"
+            value={source}
+            onChange={(e) => setSource(e.target.value)}
+            disabled={disabled || isSearching}
+            style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'var(--bg-color)', color: 'var(--text-color)' }}
+          >
+            <option style={{ background: 'var(--bg-color)', color: 'var(--text-color)' }} value="both">All Sources</option>
+            <option style={{ background: 'var(--bg-color)', color: 'var(--text-color)' }} value="linkedin">LinkedIn</option>
+            <option style={{ background: 'var(--bg-color)', color: 'var(--text-color)' }} value="indeed">Indeed</option>
+            <option style={{ background: 'var(--bg-color)', color: 'var(--text-color)' }} value="glassdoor">Glassdoor</option>
+            <option style={{ background: 'var(--bg-color)', color: 'var(--text-color)' }} value="zip_recruiter">ZipRecruiter</option>
+            <option style={{ background: 'var(--bg-color)', color: 'var(--text-color)' }} value="adzuna">Adzuna</option>
+          </select>
         </div>
 
         <button
