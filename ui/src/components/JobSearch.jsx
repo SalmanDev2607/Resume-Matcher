@@ -8,12 +8,14 @@ export default function JobSearch({ resumeText, onJobsFound, disabled }) {
   const [experience, setExperience] = useState('');
   const [source, setSource] = useState('both');
   const [isSearching, setIsSearching] = useState(false);
+  const [searchMessage, setSearchMessage] = useState('');
 
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!what) return;
 
     setIsSearching(true);
+    setSearchMessage('');
 
     const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8004';
     try {
@@ -36,12 +38,14 @@ export default function JobSearch({ resumeText, onJobsFound, disabled }) {
         onJobsFound(compareRes.data.results);
       } else {
         onJobsFound([]);
-        if (jobs.length === 0) alert('No jobs found for this search.');
+        if (jobs.length === 0) {
+          setSearchMessage('No jobs found for this search. The selected platform(s) might be blocking the request or have no results.');
+        }
       }
 
     } catch (error) {
       console.error('Error searching jobs:', error);
-      alert('Failed to search jobs. Make sure credentials are set in the backend environment.');
+      setSearchMessage('Failed to search jobs. Make sure the backend server is running and credentials are set.');
     } finally {
       setIsSearching(false);
     }
@@ -133,6 +137,12 @@ export default function JobSearch({ resumeText, onJobsFound, disabled }) {
             </>
           )}
         </button>
+        
+        {searchMessage && (
+          <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '8px', color: 'var(--danger)', fontSize: '0.9rem', textAlign: 'center' }}>
+            {searchMessage}
+          </div>
+        )}
       </form>
     </div>
   );
